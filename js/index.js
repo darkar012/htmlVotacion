@@ -1,53 +1,78 @@
-const ID = document.getElementById('ID');
+const Id = document.getElementById('Id');
 const nombre = document.getElementById('nombre');
 const IDVoto = document.getElementById('IDVoto');
-const correo = document.getElementById('correo');
-const pass = document.getElementById('pass');
-const repass = document.getElementById('repass');
 const registrarBtn = document.getElementById('registrarBtn');
+const registrarVotoBtn = document.getElementById('registrarVotoBtn');
 
 const database = firebase.database();
 
 registrar = () => {
     let n = nombre.value;
-    let a = apellido.value;
-    let u = usuario.value;
-    let c = correo.value;
-    let p = pass.value;
-    let rp = repass.value;
+    let i = Id.value;
 
-    if (p !== rp){
-        alert ('Las contraseñas no coinciden');
+    console.log(i);
+
+    if (i == "" || n == "") {
+        alert('El ID o el nombre estan vacios');
         return;
     }
 
-    if (p== ''){
-        alert('no escribio una contraseña');
-        return;
-    }
-
-    let objetoUsuario = {
+    let objetoParticipante = {
+        ID: i,
         nombre: n,
-        apellido: a,
-        usuario: u,
-        correo: c,
-        pass: p,
     };
 
-    let json =JSON.stringify(objetoUsuario);
-
-    database.ref('users').push().set(objetoUsuario);
-    }
+    database.ref('participantes/' + objetoParticipante.ID).set(objetoParticipante);
+}
 
 registrarBtn.addEventListener('click', registrar);
 
-database.ref('users').on('value', function(data){
-data.forEach(
-    function (user) {
-    let clave = user.key;
-    let valor = user.val();
-    console.log(clave);
-    console.log(valor.nombre);
+registrarVotos = () => {
+    let id = IDVoto.value;
+
+    if (id == "") {
+        alert('El ID esta vacio');
+        return;
+    }
+
+    let date = new Date();
+
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+
+    let fecha = null;
+
+    if (month < 10) {
+        fecha = `${day}-0${month}-${year}`;
+
+    } else {
+        fecha = `${day}-${month}-${year}`;
+    }
+
+    let objetoVotante = {
+        ID: id,
+        Fecha: fecha,
+    };
+    
+    database.ref('participantes').on('value', function(data){
+        data.forEach(
+            function (user) {
+            let clave = user.key;
+            if (id == clave){
+                database.ref('Votos/'+ objetoVotante.ID).push().set(objetoVotante);
+                return;
+            } 
+
+            
+        }
+        );
+        });
+
+    
 }
-);
-});
+
+
+registrarVotoBtn.addEventListener('click', registrarVotos);
+
+
