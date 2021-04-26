@@ -3,8 +3,11 @@ const nombre = document.getElementById('nombre');
 const IDVoto = document.getElementById('IDVoto');
 const registrarBtn = document.getElementById('registrarBtn');
 const registrarVotoBtn = document.getElementById('registrarVotoBtn');
+const verCandidatosBtn = document.getElementById('verCandidatosBtn');
+const verVotantesBtn = document.getElementById('verVotacionesBtn');
 
 const database = firebase.database();
+let counter = 0;
 
 registrar = () => {
     let n = nombre.value;
@@ -54,25 +57,68 @@ registrarVotos = () => {
         ID: id,
         Fecha: fecha,
     };
-    
-    database.ref('participantes').on('value', function(data){
+
+    database.ref('participantes').on('value', function (data) {
+
         data.forEach(
             function (user) {
-            let clave = user.key;
-            if (id == clave){
-                database.ref('Votos/'+ objetoVotante.ID).push().set(objetoVotante);
-                return;
-            } 
 
-            
-        }
+                let clave = user.key;
+                if (id == clave) {
+                    database.ref('Votos/' + objetoVotante.ID).push().set(objetoVotante);
+                }
+
+            }
+
         );
-        });
 
-    
+    });
+
 }
 
 
 registrarVotoBtn.addEventListener('click', registrarVotos);
+
+verCandi = () => {
+    database.ref('participantes').on('value', function (data) {
+
+        data.forEach(
+            function (user) {
+
+                let valor = user.val();
+
+                alert('ID: ' + valor.ID + ', nombre: ' + valor.nombre);
+
+            }
+
+        );
+
+    });
+}
+
+verCandidatosBtn.addEventListener('click', verCandi);
+
+verVotos = () => {
+    database.ref('participantes').on('value', function (data) {
+
+        data.forEach(
+            function (user) {
+
+                let clave = user.key;
+                database.ref('Votos/').on('value', function (data) {
+                
+
+                
+                }
+
+
+
+                );
+
+            });
+
+    }
+    );
+}
 
 
